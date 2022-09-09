@@ -1,0 +1,11 @@
+.strike-through {
+    text-decoration: line-through;
+}
+
+.clean-list {
+    list-style-type: none; 
+    margin: none;
+    padding: none;
+    text-align: left;
+    word-wrap: break-word;
+}

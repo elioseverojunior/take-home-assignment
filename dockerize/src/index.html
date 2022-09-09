@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<title>Blog</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/Styles/w3-schools.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="Styles/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+</head>
+<style>
+    body, h1, h2, h3, h4, h5 {
+        font-family: "Raleway", sans-serif
+    }
+</style>
+<body class="w3-light-grey">
+
+<!-- w3-content defines a container for fixed size centered content, 
+and is wrapped around the whole page content, except for the footer in this example -->
+<div class="w3-content" style="max-width:1400px">
+
+    <!-- Header -->
+    <header class="w3-container w3-center w3-padding-32">
+        <h1><b>MY BLOG</b></h1>
+        <p>Welcome to the blog of <span class="w3-tag">X</span></p>
+    </header>
+
+    <!-- Grid -->
+    <div class="w3-row">
+
+        <!-- Blog entries -->
+        <div class="w3-col l8 s12" id="articleHandler">
+
+            <article-front v-for="item in articles" :article="item" :key="item.id">
+
+            </article-front>
+            <!-- Blog entry -->
+
+            <!-- END BLOG ENTRIES -->
+        </div>
+
+        <!-- Introduction menu -->
+        <div class="w3-col l4">
+            <!-- About Card -->
+            <div class="w3-card w3-margin w3-margin-top">
+                <img src="" style="width:100%">
+                <div class="w3-container w3-white">
+                    <h4><b>My Name</b></h4>
+                    <p>Just me, myself and I, exploring the universe of uknownment. lorem ipsum and mauris neque quam
+                        blog.lorem ipsum and mauris neque quam bloglorem ipsum and mauris neque quam blog</p>
+                </div>
+            </div>
+            <hr>
+
+            <div class="w3-card w3-margin w3-margin-top" id="todoList">
+                <div class="w3-container w3-white">
+                    <ul class="clean-list w3-ul">
+                        <todo-item v-for="item in todoList.slice().reverse()" :todo="item" :key="item.id"
+                                   class="w3-container w3-padding-small"
+                                   v-bind:class="{ 'strike-through w3-opacity' : item.done }">
+                            <i @click.self="removeItem()"
+                               class="fa fa-remove w3-hover-opacity w3-padding w3-large w3-right"></i>
+                            <i @click.self="todoDone(item)"
+                               class="fa fa-check w3-hover-opacity w3-padding w3-large w3-right"
+                               :class="{ 'fa fa-share' : item.done }"></i>
+                        </todo-item>
+                    </ul>
+                    <div class="w3-cell-row">
+                        <input class="w3-input w3-cell w3-container w3-twothird w3-border w3-margin-bottom" type="text"
+                               v-model="newTodoText" @keyup.enter="addItem()">
+                        <button class="w3-button w3-cell w3-container w3-margin-right w3-right" @click="addItem()">Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Posts -->
+            <div class="w3-card w3-margin">
+                <div class="w3-container w3-padding">
+                    <h4>Popular Posts</h4>
+                </div>
+                <ul class="w3-ul w3-hoverable w3-white">
+                    <li class="w3-padding-16">
+                        <img src="" alt="Image" class="w3-left w3-margin-right" style="width:50px">
+                        <span class="w3-large">Lorem</span><br>
+                        <span>Sed mattis nunc</span>
+                    </li>
+                    <li class="w3-padding-16">
+                        <img src="" alt="Image" class="w3-left w3-margin-right" style="width:50px">
+                        <span class="w3-large">Ipsum</span><br>
+                        <span>Praes tinci sed</span>
+                    </li>
+                    <li class="w3-padding-16">
+                        <img src="" alt="Image" class="w3-left w3-margin-right" style="width:50px">
+                        <span class="w3-large">Dorum</span><br>
+                        <span>Ultricies congue</span>
+                    </li>
+                    <li class="w3-padding-16 w3-hide-medium w3-hide-small">
+                        <img src="" alt="Image" class="w3-left w3-margin-right" style="width:50px">
+                        <span class="w3-large">Mingsum</span><br>
+                        <span>Lorem ipsum dipsum</span>
+                    </li>
+                </ul>
+            </div>
+            <hr>
+
+            <!-- Labels / tags -->
+            <div class="w3-card w3-margin">
+                <div class="w3-container w3-padding">
+                    <h4>Tags</h4>
+                </div>
+                <div class="w3-container w3-white">
+                    <p><span class="w3-tag w3-black w3-margin-bottom">Travel</span> <span
+                            class="w3-tag w3-light-grey w3-small w3-margin-bottom">New York</span> <span
+                            class="w3-tag w3-light-grey w3-small w3-margin-bottom">London</span>
+                        <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">IKEA</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">NORWAY</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">DIY</span>
+                        <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Ideas</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">Baby</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">Family</span>
+                        <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">News</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">Clothing</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">Shopping</span>
+                        <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Sports</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">Games</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- END Introduction Menu -->
+        </div>
+
+        <!-- END GRID -->
+    </div>
+    <br>
+
+    <!-- END w3-content -->
+</div>
+
+<!-- Footer -->
+<footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
+    <button class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Previous</button>
+    <button class="w3-button w3-black w3-padding-large w3-margin-bottom">Next »</button>
+    <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+</footer>
+<script src="./scripts/todoApp.js"></script>
+<script src="./scripts/article.js"></script>
+</body>
+</html>
