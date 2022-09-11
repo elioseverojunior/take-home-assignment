@@ -1,0 +1,5 @@
+# Dockerize Ignored Files
+dockerize/dockerize
+dockerize/dockerize-darwin-amd64
+dockerize/dockerize-linux-amd64
+dockerize/log.txt
