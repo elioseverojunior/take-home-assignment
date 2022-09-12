@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  app:
+    container_name: ${PROJECT_NAME:-docker}-webserver
+    image: ${REGISTRY:-elioseverojunior/dockerize}:${TAG:-latest}
+    restart: unless-stopped
+    hostname: webserver
+    env_file: .env
+    environment:
+      - DB_HOST=${MYSQL_HOST}
+      - DB_NAME=${MYSQL_DATABASE}
+      - DB_USERNAME=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_PORT=${MYSQL_PORT}
+    ports:
+      - "${HTTP_PORT}:8080"
+    volumes:
+      - ./src:/app/src

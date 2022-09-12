@@ -10,13 +10,15 @@ Vue.component("todo-item", {
       return {
         newTodoText: "",
         todoList: [
-          { id: 0, text: "item lol", done: false },
-          { id: 1, text: "123", done: true }
+          { id: 0, text: "Task 1: Dockerize a simple golang webserver;", done: false },
+          { id: 1, text: "Task 2: Deploy that docker image to your local k8s cluster following the given spec", done: false },
+          { id: 2, text: "Task 3: Create a terraform module", done: false },
+          { id: 3, text: "Task 4: Write down a shell script for further automation", done: false },
         ],
-        nextTodoId: 3
+        nextTodoId: 4
       };
     },
-  
+
     methods: {
       //Push a new item to the list and prepare the component to recieve additional items.
       addItem: function() {

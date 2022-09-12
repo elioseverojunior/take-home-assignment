@@ -15,3 +15,10 @@ insert_final_newline = true
 
 [composer.{json,lock}]
 indent_size = 4
+
+[*.go]
+indent_size = 4
+
+[*.(htm|html)]
+indent_size = 4
+indent_style = space

@@ -1,0 +1,86 @@
+FLUSH PRIVILEGES;
+CREATE DATABASE IF NOT EXISTS blog;
+CREATE USER IF NOT EXISTS blogpost_user IDENTIFIED BY '@blogpostP@ssw0rd';
+GRANT ALL PRIVILEGES ON blog.* TO blogpost_user WITH GRANT OPTION;
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, CREATE TEMPORARY TABLES ON blog.* TO blogpost_user WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+SHOW GRANTS FOR blogpost_user;
+USE blog;
+
+CREATE TABLE IF NOT EXISTS articles
+(
+  id  int unsigned auto_increment
+    primary key,
+  title      longtext    not null,
+  post_text  longtext    not null,
+  date       datetime(3) not null,
+  image_url  longtext    not null
+);
+
+CREATE TABLE IF NOT EXISTS tags
+(
+  id  int unsigned auto_increment
+        primary key,
+  tag varchar(500)  not null
+);
+
+CREATE TABLE IF NOT EXISTS articles_tags (
+  id     INT unsigned AUTO_INCREMENT,
+  pf_articles INT unsigned NOT NULL,
+  pf_tags  INT unsigned NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (pf_articles) REFERENCES articles (id),
+  FOREIGN KEY (pf_tags) REFERENCES tags (id)
+);
+
+DROP VIEW IF EXISTS blog_posts;
+CREATE VIEW blog_posts AS
+  SELECT
+    articles.id AS idblog_posts,
+    articles.title,
+    articles.post_text,
+    articles.date,
+    articles.image_url,
+    cast(concat('[', group_concat(json_quote(tags.tag) ORDER BY tags.tag SEPARATOR ','), ']') as json) AS tags
+  FROM
+    articles
+      INNER JOIN articles_tags
+                 ON articles.id = articles_tags.pf_articles
+      INNER JOIN tags
+                 ON articles_tags.pf_tags = tags.id
+  GROUP BY
+    articles.id;
+
+# Data Insertions
+INSERT INTO blog.tags (tag) VALUES ('Automation');
+INSERT INTO blog.tags (tag) VALUES ('DevOps');
+INSERT INTO blog.tags (tag) VALUES ('DevSecOps');
+
+INSERT INTO blog.articles (title, post_text, date, image_url)
+VALUES ('DevSecOps Assessment1', 'This is a Blog Test1', '2022-09-11 16:35:21.000', '../Images/DevSecOps.png');
+
+INSERT INTO blog.articles (title, post_text, date, image_url)
+VALUES ('DevSecOps Assessment2', 'This is a Blog Test2', '2022-09-11 16:35:21.000', '../Images/Accelera-DevSecOps-Security-Controls-Infographic_v1.0_2020_feature.jpg');
+
+INSERT INTO blog.articles (title, post_text, date, image_url)
+VALUES ('DevSecOps Assessment3', 'This is a Blog Test3', '2022-09-11 16:35:21.000', '../Images/devops-simbolo-01.png');
+
+INSERT INTO blog.articles (title, post_text, date, image_url)
+VALUES ('Automation Assessment1', 'This is a Blog Automation Test1', '2022-09-11 16:35:21.000', '../Images/devops-tools.png');
+
+INSERT INTO blog.articles (title, post_text, date, image_url)
+VALUES ('Automation Assessment2', 'This is a Blog Automation Test2', '2022-09-11 16:35:21.000', '../Images/devsecops-diagram.png');
+
+INSERT INTO blog.articles (title, post_text, date, image_url)
+VALUES ('DevSecOps Automation Assessment1', 'This is a Blog Automation Test1', '2022-09-11 16:35:21.000', '../Images/finops.png');
+
+INSERT INTO blog.articles_tags (pf_articles, pf_tags) VALUES (1, 2);
+INSERT INTO blog.articles_tags (pf_articles, pf_tags) VALUES (1, 3);
+INSERT INTO blog.articles_tags (pf_articles, pf_tags) VALUES (2, 2);
+INSERT INTO blog.articles_tags (pf_articles, pf_tags) VALUES (2, 3);
+INSERT INTO blog.articles_tags (pf_articles, pf_tags) VALUES (3, 2);
+INSERT INTO blog.articles_tags (pf_articles, pf_tags) VALUES (3, 3);
+INSERT INTO blog.articles_tags (pf_articles, pf_tags) VALUES (4, 1);
+INSERT INTO blog.articles_tags (pf_articles, pf_tags) VALUES (5, 1);
+INSERT INTO blog.articles_tags (pf_articles, pf_tags) VALUES (6, 1);
+INSERT INTO blog.articles_tags (pf_articles, pf_tags) VALUES (6, 2);
