@@ -1050,3 +1050,4 @@ DerivedData/
 dockerize
 dockerize-darwin-amd64
 dockerize-linux-amd64
+mysql_baseline/

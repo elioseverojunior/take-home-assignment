@@ -1,29 +1,10 @@
-FROM alpine:latest AS base
-
-ARG GOOS=""
+ARG APPLICATION=${APPLICATION:-dockerize}
 ARG GOARCH=""
+ARG GOOS=""
+ARG TAG="3.16"
+ARG TAG_GO_BUILDER="1.19-alpine3.16"
 
-ENV GOOS=${GOOS:-linux}
-ENV GOARCH=${GOARCH:-amd64}
-
-EXPOSE 80 8080 443
-
-COPY bash_files/. /root/.
-
-RUN apk add\
- --no-cache\
- --upgrade\
- --repository https://dl-cdn.alpinelinux.org/alpine/edge/main\
- tree curl wget less\
- unzip zip rsync\
- bash bash-doc bash-completion\
- perl-utils vim\
- jq openssh libxml2-utils xz\
- && rm -rf /var/cache/apk/*
-
-CMD [ "/bin/bash" ]
-
-FROM golang:alpine AS builder
+FROM golang:${TAG_GO_BUILDER} AS builder
 
 ARG UPX_VERSION=${UPX_VERSION:-3.96}
 ARG GOOS=${GOOS:-linux}
@@ -76,17 +57,45 @@ RUN go get github.com/pwaller/goupx\
  && upx --brute "${APPLICATION}-${GOOS}-${GOARCH}"\
  && ls -lha "${APPLICATION}-${GOOS}-${GOARCH}"
 
-FROM base AS final
-
-ARG APPLICATION=${APPLICATION:-dockerize}
+FROM alpine:${TAG}
 
 ENV APPLICATION=${APPLICATION:-dockerize}
+ENV GOOS=${GOOS:-linux}
+ENV GOARCH=${GOARCH:-amd64}
+
+EXPOSE 80 8080 443
+
+COPY bash_files/. /root/.
+
+RUN apk add\
+ --no-cache\
+ --upgrade\
+ --repository https://dl-cdn.alpinelinux.org/alpine/edge/main\
+ bash-completion\
+ bash\
+ curl\
+ jq\
+ less\
+ libxml2-utils\
+ openssh\
+ perl-utils\
+ rsync\
+ tree\
+ unzip\
+ vim\
+ wget\
+ xz\
+ zip\
+ && rm -rf /var/cache/apk/*
+
+CMD [ "/bin/bash" ]
 
 WORKDIR /app
 
 COPY --from=builder "/usr/src/build/${APPLICATION}-$GOOS-$GOARCH" "/app/${APPLICATION}"
 COPY --from=builder "/usr/src/build/src" "/app/src"
 
-RUN chmod +x /app/${APPLICATION} && rm -rfv /root/.cache
+RUN chmod +x "/app/${APPLICATION}"\
+ && rm -rfv "/root/.cache"
 
-ENTRYPOINT ./${APPLICATION}
+ENTRYPOINT [ "/app/dockerize" ]

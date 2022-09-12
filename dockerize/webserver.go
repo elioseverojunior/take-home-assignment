@@ -1,46 +1,39 @@
 package main
 
 import (
-	"bufio"
+	"context"
 	"database/sql"
-	logger "dockerize/logging"
-	"dockerize/webserver/articlehandler"
-	"github.com/joho/godotenv"
-	"log"
+	"errors"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+
+	logger "dockerize/logging"
+	"dockerize/webserver/articlehandler"
+)
+
+var (
+	log = logger.InitLogrusLogger()
 )
 
 func init() {
-	LoadEnvironmentConfigs()
-
-	if _, noLog := os.Stat("./log.txt"); os.IsNotExist(noLog) {
-		newLog, err := os.Create("./log.txt")
-		if err != nil {
-			log.Fatal(err)
-		}
-		newLog.Close()
-	}
-
 	// TODO: Needs to check how to connect with MySQL Server using configuration connections strings
-	db, err := sql.Open("mysql", "root:root@tcp(192.168.1.62:3306)/blog")
+	//db, err := sql.Open("mysql",
+	//    os.Getenv("MYSQL_USER")+":"+
+	//        os.Getenv("MYSQL_PASSWORD")+
+	//        "@tcp("+os.Getenv("MYSQL_HOST")+":"+
+	//        os.Getenv("MYSQL_PORT")+")/"+os.Getenv("MYSQL_DATABASE"))
+	db, err := sql.Open("mysql", "blogpost_user:@blogpostP@ssw0rd@tcp(10.87.33.212:3306)/blog")
 	check(err)
 	err = db.Ping()
 	check(err)
 	dbChecker := time.NewTicker(time.Minute)
 	articlehandler.PassDataBase(db)
 	go checkDB(dbChecker, db)
-
-}
-
-func LoadEnvironmentConfigs() {
-	// Load the .env file in the current directory
-	godotenv.Load()
-	result, _ := godotenv.Read(".env")
-	log.Println(result)
 }
 
 func main() {
@@ -48,34 +41,56 @@ func main() {
 	http.HandleFunc("/articles/", logger.LoggerHandler(articlehandler.ReturnArticle))
 	http.HandleFunc("/index.html", logger.LoggerHandler(articlehandler.ReturnHomePage))
 	http.HandleFunc("/api/articles", logger.LoggerHandler(articlehandler.ReturnArticlesForHomePage))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: nil,
+	}
+
+	go func() {
+		if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("HTTP server error: %v", err)
+		}
+		log.Println("Stopped serving new connections.")
+	}()
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	<-sigChan
+
+	shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownRelease()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Fatalf("HTTP shutdown error: %v", err)
+	}
+	log.Println("Graceful shutdown complete.")
 }
 
-func readConfig(s string) string {
-	config, err := os.Open(s)
-	check(err)
-	defer config.Close()
-
-	scanner := bufio.NewScanner(config)
-	scanner.Scan()
-	return scanner.Text()
-}
+//func readConfig(s string) string {
+//	config, err := os.Open(s)
+//	check(err)
+//	defer func(config *os.File) {
+//		err := config.Close()
+//		if err != nil {
+//			log.Error(err)
+//		}
+//	}(config)
+//
+//	scanner := bufio.NewScanner(config)
+//	scanner.Scan()
+//	return scanner.Text()
+//}
 
 func check(err error) {
 	if err != nil {
-		errorLog, osError := os.OpenFile("./log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if osError != nil {
-			log.Fatal(err)
-		}
-		defer errorLog.Close()
-		textLogger := log.New(errorLog, "go-webserver", log.LstdFlags)
 		switch err {
 		case http.ErrMissingFile:
 			log.Print(err)
-			textLogger.Fatalln("File missing/cannot be accessed : ", err)
+			log.Fatalln("File missing/cannot be accessed : ", err)
 		case sql.ErrTxDone:
 			log.Print(err)
-			textLogger.Fatalln("SQL connection failure : ", err)
+			log.Fatalln("SQL connection failure : ", err)
 		}
 		log.Println("An error has occurred : ", err)
 	}

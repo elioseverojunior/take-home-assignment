@@ -6,8 +6,8 @@
 * Create namespace;
 * Create deployment;
   * Use the golang webserver image you built in the previous step;
-  * Add readiness/liveness probe;
-  * Add prestophook;
+  * Add `readiness/liveness` probe;
+  * Add `prestophook`;
   * add init container that sleep for 30 seconds;
 * Create service to expose your pod;
 
