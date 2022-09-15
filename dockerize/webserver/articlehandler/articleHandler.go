@@ -42,14 +42,13 @@ func ReturnArticle(w http.ResponseWriter, r *http.Request) {
 	articleTemplate, err := template.ParseFiles("./src/articles/article.html")
 	article := getArticle(articleID)
 	err = articleTemplate.Execute(w, article)
-	//Article, err := json.Marshal(getArticle(articleID))
 	if err != nil {
 		log.Fatal("Fatal parsing error : ", err)
 	}
 }
 
 // ReturnArticlesForHomePage returns a JSON response containing data on the Articles
-func ReturnArticlesForHomePage(w http.ResponseWriter, r *http.Request) {
+func ReturnArticlesForHomePage(w http.ResponseWriter, _ *http.Request) {
 	articles, err := json.Marshal(frontPagePosts())
 	if err != nil {
 		log.Fatal("JSON FAIL", err)

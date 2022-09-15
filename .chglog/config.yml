@@ -1,0 +1,48 @@
+style: github
+template: CHANGELOG.tpl.md
+info:
+  title: CHANGELOG
+  repository_url: https://github.com/elioseverojunior/take-home-assignment
+options:
+  commits:
+    filters:
+      Type:
+        - bugfix
+        - ci
+        - chore
+        - feat
+        - feature
+        - fix
+        - hotfix
+        - init
+        - perf
+        - refact
+        - refactor
+        - sec
+        - security
+        - support
+  commit_groups:
+    title_maps:
+      bugfix: Bug Fixes
+      ci: CI
+      chore: Chores
+      feat: Features
+      feature: Features
+      fix: Bug Fixes
+      hotfix: Hot Fixes
+      init: Repository Initialization
+      perf: Performance Improvements
+      refact: Code Refactoring
+      refactor: Code Refactoring
+      sec: Security
+      security: Security
+      support: Support
+  header:
+    pattern: "^(\\w*)(?:\\(([\\w\\$\\.\\-\\*\\s]*)\\))?\\:\\s(.*)$"
+    pattern_maps:
+      - Type
+      - Scope
+      - Subject
+  notes:
+    keywords:
+      - BREAKING CHANGE

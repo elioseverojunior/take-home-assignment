@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"database/sql"
+	"dockerize/version"
 	"errors"
 	"net/http"
 	"os"
@@ -20,6 +22,16 @@ var (
 	log = logger.InitLogrusLogger()
 )
 
+func readConfig(s string) string {
+	config, err := os.Open(s)
+	check(err)
+	defer config.Close()
+
+	scanner := bufio.NewScanner(config)
+	scanner.Scan()
+	return scanner.Text()
+}
+
 func init() {
 	// TODO: Needs to check how to connect with MySQL Server using configuration connections strings
 	//db, err := sql.Open("mysql",
@@ -27,7 +39,10 @@ func init() {
 	//        os.Getenv("MYSQL_PASSWORD")+
 	//        "@tcp("+os.Getenv("MYSQL_HOST")+":"+
 	//        os.Getenv("MYSQL_PORT")+")/"+os.Getenv("MYSQL_DATABASE"))
-	db, err := sql.Open("mysql", "blogpost_user:@blogpostP@ssw0rd@tcp(10.87.33.212:3306)/blog")
+	//db, err := sql.Open("mysql", "blogpost_user:@blogpostP@ssw0rd@tcp(10.87.33.212:3306)/blog")
+	dbString := readConfig("server.config")
+	var err error
+	db, err := sql.Open("mysql", dbString)
 	check(err)
 	err = db.Ping()
 	check(err)
@@ -37,10 +52,15 @@ func init() {
 }
 
 func main() {
+	log.Printf(
+		"Starting the service... commit: %s, build time: %s, release: %s",
+		version.Commit, version.BuildTime, version.Release,
+	)
 	http.Handle("/", http.FileServer(http.Dir("./src")))
 	http.HandleFunc("/articles/", logger.LoggerHandler(articlehandler.ReturnArticle))
 	http.HandleFunc("/index.html", logger.LoggerHandler(articlehandler.ReturnHomePage))
 	http.HandleFunc("/api/articles", logger.LoggerHandler(articlehandler.ReturnArticlesForHomePage))
+	http.HandleFunc("/api/version", logger.LoggerHandler(version.VersionInfo))
 
 	server := &http.Server{
 		Addr:    ":8080",
@@ -66,21 +86,6 @@ func main() {
 	}
 	log.Println("Graceful shutdown complete.")
 }
-
-//func readConfig(s string) string {
-//	config, err := os.Open(s)
-//	check(err)
-//	defer func(config *os.File) {
-//		err := config.Close()
-//		if err != nil {
-//			log.Error(err)
-//		}
-//	}(config)
-//
-//	scanner := bufio.NewScanner(config)
-//	scanner.Scan()
-//	return scanner.Text()
-//}
 
 func check(err error) {
 	if err != nil {

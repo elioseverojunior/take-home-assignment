@@ -1,0 +1,59 @@
+repos:
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.74.1
+    hooks:
+      - id: terraform_fmt
+        args:
+          - recursive=true
+      - id: terraform_tflint
+        exclude: ^\.github/.*$|^\.circleci/.*$|^\.terraform/.*$|^\.terragrunt_cache/.*$|^var/.*.tfvar[s]$|^docs/.*.tfvar[s]$|^examples/.*$|^modules/vpc/examples/.*$
+        args:
+          - --args=--only=terraform_comment_syntax
+          - --args=--only=terraform_deprecated_index
+          - --args=--only=terraform_deprecated_interpolation
+          - --args=--only=terraform_documented_outputs
+          - --args=--only=terraform_documented_variables
+          - --args=--only=terraform_naming_convention
+          - --args=--only=terraform_required_providers
+          - --args=--only=terraform_required_version
+          - --args=--only=terraform_typed_variables
+          - --args=--only=terraform_unused_declarations
+      - id: terraform_tfsec
+        exclude: ^\.github/.*$|^\.circleci/.*$|^\.terraform/.*$|^\.terragrunt_cache/.*$|^\var[s]/.*.tfvar[s]$|^\var[s]/.*.tf$|^modules/vpc/examples/.*$
+        args:
+          - --args=--exclude-downloaded-modules
+          - --args=--no-module-downloads
+      - id: terraform_docs
+        args:
+          - --args=--lockfile=false
+          - --args=--config=./.terraform-docs.yml
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-vcs-permalinks
+      - id: check-yaml
+        exclude: ^kubernetes/dockerize/.*$|^kubernetes/mysql.yaml$|^kubernetes/app.yaml$
+      - id: detect-aws-credentials
+      - id: detect-private-key
+      - id: double-quote-string-fixer
+      - id: end-of-file-fixer
+        exclude: ^\.idea/.*$
+      - id: fix-byte-order-marker
+      - id: fix-encoding-pragma
+      - id: mixed-line-ending
+        args:
+          - '--fix=auto'
+      - id: pretty-format-json
+        args:
+          - '--autofix'
+      - id: trailing-whitespace
+  # - repo: local
+  #   hooks:
+  #     - id: check-requirements
+  #       name: check requirements files
+  #       language: system
+  #       entry: python -m scripts.check_requirements --compare
+  #       files: ^requirements.*.txt$

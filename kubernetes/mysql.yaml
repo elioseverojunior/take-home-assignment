@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  namespace: webserver-assessment
+  labels:
+    app: mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secrets
+  namespace: webserver-assessment
+  labels:
+    app: mysql
+type: Opaque
+stringData:
+  server.config: |-
+    blogpost_user:@blogpostP@ssw0rd@tcp(192.168.1.62:3306)/blog
+data:
+  MYSQL_ROOT_USER: cm9vdA==
+  MYSQL_ROOT_PASSWORD: cm9vdA==
+  MYSQL_USER: YmxvZ3Bvc3RfdXNlcg==
+  MYSQL_PASSWORD: QGJsb2dwb3N0UEBzc3cwcmQ=
+  MYSQL_DATABASE: YmxvZw==
+  MYSQL_HOST: bXlzcWw=
+  MYSQL_PORT: MzMwNg==
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: webserver-assessment
+  labels:
+    app: mysql
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: mysql
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: webserver-assessment
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - image: mysql:8.0
+          name: mysql
+          envFrom:
+            - secretRef:
+                name: mysql-secrets
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+      dnsPolicy: ClusterFirst

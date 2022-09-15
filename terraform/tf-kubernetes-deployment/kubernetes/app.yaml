@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dockerize
+  namespace: webserver-assessment
+  labels:
+    app: dockerize
+spec:
+  progressDeadlineSeconds: 300
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: dockerize
+  revisionHistoryLimit: 10
+  replicas: 2
+  template:
+    metadata:
+      name: dockerize
+      namespace: webserver-assessment
+      labels:
+        app: dockerize
+    spec:
+      terminationGracePeriodSeconds: 60
+      initContainers:
+        - name: init
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          command: ['/bin/sh', '-c', 'ls -lha /app/ && /app/init.sh']
+          envFrom:
+            - secretRef:
+                name: database-secrets
+          volumeMounts:
+            - name: database-secrets
+              mountPath: /app/server.config
+              subPath: server.config
+              readOnly: true
+            - name: dockerize-scripts
+              mountPath: /app/init.sh
+              subPath: init.sh
+              readOnly: true
+            - name: dockerize-sql
+              mountPath: /app/init.sql
+              subPath: init.sql
+              readOnly: true
+      containers:
+        - name: dockerize
+          image: elioseverojunior/dockerize:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: database-secrets
+            - secretRef:
+                name: database-secrets
+          ports:
+            - containerPort: 8080
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "/app/scripts/prestop.sh"]
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          volumeMounts:
+            - name: database-secrets
+              mountPath: /app/server.config
+              subPath: server.config
+              readOnly: true
+            - name: dockerize-scripts
+              mountPath: /app/scripts/prestop.sh
+              subPath: prestop.sh
+              readOnly: true
+      volumes:
+        - name: database-secrets
+          secret:
+            secretName: database-secrets
+            items:
+              - key: server.config
+                path: server.config
+        - name: dockerize-scripts
+          configMap:
+            name: dockerize-scripts
+            items:
+              - key: init.sh
+                path: init.sh
+              - key: prestop.sh
+                path: prestop.sh
+            defaultMode: 0755
+        - name: dockerize-sql
+          configMap:
+            name: dockerize-sql
+            items:
+              - key: init.sql
+                path: init.sql
+            defaultMode: 0644
+      dnsPolicy: ClusterFirst

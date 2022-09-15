@@ -1,20 +1,56 @@
 ARG APPLICATION=${APPLICATION:-dockerize}
-ARG GOARCH=""
-ARG GOOS=""
-ARG TAG="3.16"
-ARG TAG_GO_BUILDER="1.19-alpine3.16"
-
-FROM golang:${TAG_GO_BUILDER} AS builder
-
-ARG UPX_VERSION=${UPX_VERSION:-3.96}
-ARG GOOS=${GOOS:-linux}
+ARG BUILD_TIME=${BUILD_TIME:-unset}
+ARG COMMIT=${COMMIT:-unset}
 ARG GOARCH=${GOARCH:-amd64}
-ARG APPLICATION=${APPLICATION:-dockerize}
+ARG GOOS=${GOOS:-linux}
+ARG GO_BUILDER_TAG="1.19-alpine3.16"
+ARG RELEASE=${RELEASE:-unset}
+ARG TAG="3.16"
+ARG UPX_VERSION=${UPX_VERSION:-3.96}
+
+FROM alpine:${TAG} AS base
 
 ENV APPLICATION=${APPLICATION:-dockerize}
-ENV UPX_VERSION=${UPX_VERSION:-3.96}
 ENV GOOS=${GOOS:-linux}
 ENV GOARCH=${GOARCH:-amd64}
+
+EXPOSE 80 443 8080
+
+ADD bash_files/. /root/.
+
+RUN apk add\
+ --no-cache\
+ --upgrade\
+ --repository https://dl-cdn.alpinelinux.org/alpine/edge/main\
+ bash-completion\
+ bash\
+ curl\
+ jq\
+ less\
+ libxml2-utils\
+ mysql-client\
+ openssh\
+ perl-utils\
+ rsync\
+ tree\
+ unzip\
+ vim\
+ wget\
+ xz\
+ zip\
+ && rm -rf /var/cache/apk/*;
+
+CMD [ "/bin/bash" ]
+
+FROM golang:${GO_BUILDER_TAG} AS builder
+
+ENV APPLICATION=${APPLICATION:-dockerize}
+ENV BUILD_TIME=${BUILD_TIME:-unset}
+ENV COMMIT=${COMMIT:-unset}
+ENV GOARCH=${GOARCH:-amd64}
+ENV GOOS=${GOOS:-linux}
+ENV RELEASE=${RELEASE:-unset}
+ENV UPX_VERSION=${UPX_VERSION:-3.96}
 
 RUN export GOOS GOARCH\
  && apk add\
@@ -22,19 +58,27 @@ RUN export GOOS GOARCH\
  --upgrade\
  --repository https://dl-cdn.alpinelinux.org/alpine/edge/main\
  alpine-sdk\
- libpq\
- gettext\
- tree\
- curl\
- less\
- unzip zip rsync\
- openssl gcc\
- bash\
- bash-doc\
  bash-completion\
- perl-utils git vim\
- curl wget jq openssh libxml2-utils xz\
+ bash\
+ curl\
+ gcc\
+ gettext\
+ git\
+ jq\
+ less\
+ libpq\
+ libxml2-utils\
  mysql-client\
+ openssh\
+ openssl\
+ perl-utils\
+ rsync\
+ tree\
+ unzip\
+ vim\
+ wget\
+ xz\
+ zip\
  && rm -rf /var/cache/apk/*
 
 CMD [ "/bin/bash" ]
@@ -52,43 +96,12 @@ WORKDIR /usr/src/build/
 COPY . .
 
 RUN go get github.com/pwaller/goupx\
- && go build -a -ldflags '-s -w' -o "${APPLICATION}-${GOOS}-${GOARCH}"\
+ && go build -a -ldflags '-s -w -X version.Release=${RELEASE} -X version.Commit=${COMMIT} -X version.BuildTime=${BUILD_TIME}"' -o "${APPLICATION}-${GOOS}-${GOARCH}"\
  && ls -lha "${APPLICATION}-${GOOS}-${GOARCH}"\
  && upx --brute "${APPLICATION}-${GOOS}-${GOARCH}"\
  && ls -lha "${APPLICATION}-${GOOS}-${GOARCH}"
 
-FROM alpine:${TAG}
-
-ENV APPLICATION=${APPLICATION:-dockerize}
-ENV GOOS=${GOOS:-linux}
-ENV GOARCH=${GOARCH:-amd64}
-
-EXPOSE 80 8080 443
-
-COPY bash_files/. /root/.
-
-RUN apk add\
- --no-cache\
- --upgrade\
- --repository https://dl-cdn.alpinelinux.org/alpine/edge/main\
- bash-completion\
- bash\
- curl\
- jq\
- less\
- libxml2-utils\
- openssh\
- perl-utils\
- rsync\
- tree\
- unzip\
- vim\
- wget\
- xz\
- zip\
- && rm -rf /var/cache/apk/*
-
-CMD [ "/bin/bash" ]
+FROM base AS final
 
 WORKDIR /app
 

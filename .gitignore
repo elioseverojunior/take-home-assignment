@@ -1,4 +1,7 @@
 # Dockerize Ignored Files
+.cache/
+.terraform.lock.hcl
+.terraform/
 dockerize/dockerize
 dockerize/dockerize-darwin-amd64
 dockerize/dockerize-linux-amd64

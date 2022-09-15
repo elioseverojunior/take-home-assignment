@@ -43,6 +43,17 @@ func InitLogrusLogger() *logrus.Logger {
 	}
 }
 
+func ReadUserIP(r *http.Request) string {
+	IPAddress := r.Header.Get("X-Real-Ip")
+	if IPAddress == "" {
+		IPAddress = r.Header.Get("X-Forwarded-For")
+	}
+	if IPAddress == "" {
+		IPAddress = r.RemoteAddr
+	}
+	return IPAddress
+}
+
 // LoggerHandler helps logging request and response related data.
 func LoggerHandler(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +64,7 @@ func LoggerHandler(h http.HandlerFunc) http.HandlerFunc {
 		h.ServeHTTP(wr, r)
 
 		log.WithFields(logrus.Fields{
-			"http_req_client_ip":  wr.reqClientIP,
+			"http_req_client_ip":  ReadUserIP(r),
 			"http_req_duration":   time.Since(t).Milliseconds(),
 			"http_req_host":       wr.reqHost,
 			"http_req_method":     wr.reqMethod,

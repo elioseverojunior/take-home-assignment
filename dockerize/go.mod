@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/rumyantseva/advent-2017 v0.0.0-20180207144541-88a8e8066971
 	github.com/sirupsen/logrus v1.9.0
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 )

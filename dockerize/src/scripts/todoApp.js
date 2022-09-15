@@ -44,4 +44,3 @@ Vue.component("todo-item", {
       }
     }
   });
-
