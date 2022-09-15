@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="caa9e940-3d03-4835-9384-4c6e00d77d49" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linux/automation.sh" beforeDir="false" afterPath="$PROJECT_DIR$/linux/automation.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.chglog/CHANGELOG.tpl.md" beforeDir="false" afterPath="$PROJECT_DIR$/.chglog/CHANGELOG.tpl.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,19 +43,19 @@
     "WebServerToolWindowFactoryState": "false",
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
-    "last_opened_file_path": "/Users/elio/GolandProjects/take-home-assignment",
+    "last_opened_file_path": "/Users/elio/GolandProjects/take-home-assignment/linux/.images",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.fileTypes",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/linux/.images" />
+      <recent name="$PROJECT_DIR$/linux" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/terraform/tf-kubernetes-deployment" />
       <recent name="$PROJECT_DIR$/terraform/tf-kubernetes-deployment/kubernetes" />
-      <recent name="$PROJECT_DIR$/terraform/tf-kubernets-deployment/kubernetes" />
-      <recent name="$PROJECT_DIR$/terraform/tf-kubernets-deployment" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/terraform/tf-kubernets-deployment/kubernetes" />

@@ -1,4 +1,4 @@
-# Terraform AWS VPC Brazil / LAS
+# Take Home Assignment
 
 {{ if .Versions -}}<a name="unreleased"></a>
 

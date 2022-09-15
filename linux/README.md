@@ -2,7 +2,7 @@
 
 ## Exercise Goals
 
-* Copy your `app.yaml` from your second task to this folder with the name `script.yml`:
+* Copy your `app.yaml` from your second task to this folder with the name `script.yaml`:
   * Replace the `image` value in your deployment by: `MY_NEW_IMAGE`
 * Create a Bash Script named `automation.sh` to:
   * Build the `Dockerfile` you created on the first task;
@@ -24,6 +24,53 @@ Please, provide us with a file named `automation.sh` you created. Your `automati
 Please, provide us with your `script.yml` and `new-app.yaml` files;
 
 [Optional] You can also share screenshots of your progress.
+
+### Requirements
+
+* jq
+* kubectl
+* minikube
+* terraform
+
+### Automation BashScript
+
+#### Usage
+```text
+USAGE:
+  automation.sh
+    -i|--image                  <docker image>                Default is elioseverojunior/dockerize:latest
+    --no-build-docker-images    <no build docker new image>   Default is true
+    --no-push-docker-images     <no push docker new image>    Default is true
+    --no-run-minikube           <no run minikube deployment>  Default is true
+    --no-run-terraform          <deploy with terraform>       Default is true
+    --start-minikube-dashboard  <start minikube dashboard>    Default is false
+    -h|--help                   <display this help>
+```
+
+### Running `automation.sh`
+
+```bash
+cd linux
+bash automation.sh
+```
+
+```bash
+cd linux
+bash automation.sh -i elioseverojunior/test:latest
+```
+
+
+```bash
+cd linux
+bash automation.sh -i elioseverojunior/dockerize:latest --no-push-docker-images --no-build-docker-images --no-run-terraform --start-minikube-dashboard
+```
+
+### Kubectl Diff Command
+```bash
+kubectl diff -f new-app.yaml
+```
+
+![kubectl_diff](.images/kubectl_diff.png "Articles API")
 
 ### Next steps?
 

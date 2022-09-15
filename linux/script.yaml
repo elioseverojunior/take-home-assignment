@@ -43,7 +43,7 @@ spec:
               readOnly: true
       containers:
         - name: dockerize
-          image: elioseverojunior/dockerize:latest
+          image: MY_NEW_IMAGE
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:

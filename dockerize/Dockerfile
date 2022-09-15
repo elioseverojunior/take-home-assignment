@@ -96,7 +96,7 @@ WORKDIR /usr/src/build/
 COPY . .
 
 RUN go get github.com/pwaller/goupx\
- && go build -a -ldflags '-s -w -X version.Release=${RELEASE} -X version.Commit=${COMMIT} -X version.BuildTime=${BUILD_TIME}"' -o "${APPLICATION}-${GOOS}-${GOARCH}"\
+ && go build -a -ldflags "-s -w -X version.Release=${RELEASE} -X version.Commit=${COMMIT} -X version.BuildTime=${BUILD_TIME}" -o "${APPLICATION}-${GOOS}-${GOARCH}"\
  && ls -lha "${APPLICATION}-${GOOS}-${GOARCH}"\
  && upx --brute "${APPLICATION}-${GOOS}-${GOARCH}"\
  && ls -lha "${APPLICATION}-${GOOS}-${GOARCH}"

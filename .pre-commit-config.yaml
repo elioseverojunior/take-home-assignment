@@ -35,7 +35,7 @@ repos:
       - id: check-shebang-scripts-are-executable
       - id: check-vcs-permalinks
       - id: check-yaml
-        exclude: ^kubernetes/dockerize/.*$|^kubernetes/mysql.yaml$|^kubernetes/app.yaml$
+        exclude: ^kubernetes/dockerize/.*$|^kubernetes/mysql.yaml$|^kubernetes/app.yaml$|^kubernetes/additional_resources.yaml$|^linux/mysql.yaml$|^linux/additional_resources.yaml$
       - id: detect-aws-credentials
       - id: detect-private-key
       - id: double-quote-string-fixer

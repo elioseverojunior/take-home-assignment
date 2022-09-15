@@ -10,6 +10,7 @@
 
 ### Features
 
+- automation.sh
 - kubernetes
 - adding prestophook
 - webserver application

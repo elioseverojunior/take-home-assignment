@@ -1,0 +1,305 @@
+"id": "webserver-assessment/dockerize"
+"metadata":
+- "annotations": null
+  "generate_name": ""
+  "generation": 1
+  "labels":
+    "app": "dockerize"
+  "name": "dockerize"
+  "namespace": "webserver-assessment"
+  "resource_version": "1926"
+  "uid": "754c1c29-5e52-4deb-8689-d02126b7623a"
+"spec":
+- "min_ready_seconds": 0
+  "paused": false
+  "progress_deadline_seconds": 300
+  "replicas": "2"
+  "revision_history_limit": 10
+  "selector":
+  - "match_expressions": []
+    "match_labels":
+      "app": "dockerize"
+  "strategy":
+  - "rolling_update":
+    - "max_surge": "1"
+      "max_unavailable": "0"
+    "type": "RollingUpdate"
+  "template":
+  - "metadata":
+    - "annotations": null
+      "generate_name": ""
+      "generation": 0
+      "labels":
+        "app": "dockerize"
+      "name": "dockerize"
+      "namespace": "webserver-assessment"
+      "resource_version": ""
+      "uid": ""
+    "spec":
+    - "active_deadline_seconds": 0
+      "affinity": []
+      "automount_service_account_token": true
+      "container":
+      - "args": null
+        "command": []
+        "env": []
+        "env_from":
+        - "config_map_ref": []
+          "prefix": ""
+          "secret_ref":
+          - "name": "database-secrets"
+            "optional": false
+        - "config_map_ref": []
+          "prefix": ""
+          "secret_ref":
+          - "name": "database-secrets"
+            "optional": false
+        "image": "elioseverojunior/dockerize:latest"
+        "image_pull_policy": "IfNotPresent"
+        "lifecycle":
+        - "post_start": []
+          "pre_stop":
+          - "exec":
+            - "command":
+              - "sh"
+              - "-c"
+              - "/app/scripts/prestop.sh"
+            "http_get": []
+            "tcp_socket": []
+        "liveness_probe":
+        - "exec": []
+          "failure_threshold": 3
+          "http_get":
+          - "host": ""
+            "http_header": []
+            "path": "/"
+            "port": "8080"
+            "scheme": "HTTP"
+          "initial_delay_seconds": 10
+          "period_seconds": 5
+          "success_threshold": 1
+          "tcp_socket": []
+          "timeout_seconds": 2
+        "name": "dockerize"
+        "port":
+        - "container_port": 8080
+          "host_ip": ""
+          "host_port": 0
+          "name": ""
+          "protocol": "TCP"
+        "readiness_probe":
+        - "exec": []
+          "failure_threshold": 3
+          "http_get":
+          - "host": ""
+            "http_header": []
+            "path": "/"
+            "port": "8080"
+            "scheme": "HTTP"
+          "initial_delay_seconds": 10
+          "period_seconds": 10
+          "success_threshold": 1
+          "tcp_socket": []
+          "timeout_seconds": 2
+        "resources":
+        - "limits":
+            "cpu": "100m"
+            "memory": "128Mi"
+          "requests":
+            "cpu": "100m"
+            "memory": "128Mi"
+        "security_context": []
+        "startup_probe": []
+        "stdin": false
+        "stdin_once": false
+        "termination_message_path": "/dev/termination-log"
+        "termination_message_policy": "File"
+        "tty": false
+        "volume_mount":
+        - "mount_path": "/app/server.config"
+          "mount_propagation": "None"
+          "name": "database-secrets"
+          "read_only": true
+          "sub_path": "server.config"
+        - "mount_path": "/app/scripts/prestop.sh"
+          "mount_propagation": "None"
+          "name": "dockerize-scripts"
+          "read_only": true
+          "sub_path": "prestop.sh"
+        "working_dir": ""
+      "dns_config": []
+      "dns_policy": "ClusterFirst"
+      "enable_service_links": true
+      "host_aliases": []
+      "host_ipc": false
+      "host_network": false
+      "host_pid": false
+      "hostname": ""
+      "image_pull_secrets": []
+      "init_container":
+      - "args": null
+        "command":
+        - "/bin/sh"
+        - "-c"
+        - "/app/init.sh"
+        "env": []
+        "env_from":
+        - "config_map_ref": []
+          "prefix": ""
+          "secret_ref":
+          - "name": "database-secrets"
+            "optional": false
+        "image": "busybox"
+        "image_pull_policy": "IfNotPresent"
+        "lifecycle": []
+        "liveness_probe": []
+        "name": "init"
+        "port": []
+        "readiness_probe": []
+        "resources":
+        - "limits": null
+          "requests": null
+        "security_context": []
+        "startup_probe": []
+        "stdin": false
+        "stdin_once": false
+        "termination_message_path": "/dev/termination-log"
+        "termination_message_policy": "File"
+        "tty": false
+        "volume_mount":
+        - "mount_path": "/app/server.config"
+          "mount_propagation": "None"
+          "name": "database-secrets"
+          "read_only": true
+          "sub_path": "server.config"
+        - "mount_path": "/app/init.sh"
+          "mount_propagation": "None"
+          "name": "dockerize-scripts"
+          "read_only": true
+          "sub_path": "init.sh"
+        - "mount_path": "/app/init.sql"
+          "mount_propagation": "None"
+          "name": "dockerize-sql"
+          "read_only": true
+          "sub_path": "init.sql"
+        "working_dir": ""
+      "node_name": ""
+      "node_selector": null
+      "priority_class_name": ""
+      "readiness_gate": []
+      "restart_policy": "Always"
+      "security_context": []
+      "service_account_name": ""
+      "share_process_namespace": false
+      "subdomain": ""
+      "termination_grace_period_seconds": 60
+      "toleration": []
+      "topology_spread_constraint": []
+      "volume":
+      - "aws_elastic_block_store": []
+        "azure_disk": []
+        "azure_file": []
+        "ceph_fs": []
+        "cinder": []
+        "config_map": []
+        "csi": []
+        "downward_api": []
+        "empty_dir": []
+        "fc": []
+        "flex_volume": []
+        "flocker": []
+        "gce_persistent_disk": []
+        "git_repo": []
+        "glusterfs": []
+        "host_path": []
+        "iscsi": []
+        "local": []
+        "name": "database-secrets"
+        "nfs": []
+        "persistent_volume_claim": []
+        "photon_persistent_disk": []
+        "projected": []
+        "quobyte": []
+        "rbd": []
+        "secret":
+        - "default_mode": "0644"
+          "items":
+          - "key": "server.config"
+            "mode": ""
+            "path": "server.config"
+          "optional": false
+          "secret_name": "database-secrets"
+        "vsphere_volume": []
+      - "aws_elastic_block_store": []
+        "azure_disk": []
+        "azure_file": []
+        "ceph_fs": []
+        "cinder": []
+        "config_map":
+        - "default_mode": "0755"
+          "items":
+          - "key": "init.sh"
+            "mode": ""
+            "path": "init.sh"
+          - "key": "prestop.sh"
+            "mode": ""
+            "path": "prestop.sh"
+          "name": "dockerize-scripts"
+          "optional": false
+        "csi": []
+        "downward_api": []
+        "empty_dir": []
+        "fc": []
+        "flex_volume": []
+        "flocker": []
+        "gce_persistent_disk": []
+        "git_repo": []
+        "glusterfs": []
+        "host_path": []
+        "iscsi": []
+        "local": []
+        "name": "dockerize-scripts"
+        "nfs": []
+        "persistent_volume_claim": []
+        "photon_persistent_disk": []
+        "projected": []
+        "quobyte": []
+        "rbd": []
+        "secret": []
+        "vsphere_volume": []
+      - "aws_elastic_block_store": []
+        "azure_disk": []
+        "azure_file": []
+        "ceph_fs": []
+        "cinder": []
+        "config_map":
+        - "default_mode": "0755"
+          "items":
+          - "key": "init.sql"
+            "mode": ""
+            "path": "init.sql"
+          "name": "dockerize-sql"
+          "optional": false
+        "csi": []
+        "downward_api": []
+        "empty_dir": []
+        "fc": []
+        "flex_volume": []
+        "flocker": []
+        "gce_persistent_disk": []
+        "git_repo": []
+        "glusterfs": []
+        "host_path": []
+        "iscsi": []
+        "local": []
+        "name": "dockerize-sql"
+        "nfs": []
+        "persistent_volume_claim": []
+        "photon_persistent_disk": []
+        "projected": []
+        "quobyte": []
+        "rbd": []
+        "secret": []
+        "vsphere_volume": []
+"timeouts": null
+"wait_for_rollout": true
