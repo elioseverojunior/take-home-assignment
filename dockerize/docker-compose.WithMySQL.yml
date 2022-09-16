@@ -10,7 +10,7 @@ services:
     container_name: ${PROJECT_NAME:-docker}-mysql
     env_file: .env
     hostname: mysql
-    image: mysql:latest
+    image: mysql:8-debian
     ports:
       - "${MYSQL_PORT}:3306"
     restart: unless-stopped

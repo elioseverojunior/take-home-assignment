@@ -45,7 +45,7 @@ spec:
         app: dockerize
     spec:
       containers:
-        - image: mysql:8.0
+        - image: mysql:8-debian
           name: mysql
           envFrom:
             - secretRef:
@@ -53,16 +53,43 @@ spec:
           ports:
             - containerPort: 3306
               name: mysql
-          lifecycle:
-            postStart:
-              exec:
-                command: [ "/bin/sh", "-c", "/tmp/init-sql-db.sh" ]
+              protocol: TCP
+          #          lifecycle:
+          #            postStart:
+          #              exec:
+          #                command: [ "/bin/sh", "-c", "ls -lha /tmp/ && /tmp/init-sql-db.sh && cat /tmp/deploy_init.sql && rm -rf /tmp/deploy_init.sql;" ]
+          livenessProbe:
+            exec:
+              command:
+                - /opt/healthcheck-liveness.sh
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          #          readinessProbe:
+          #            exec:
+          #              command:
+          #                - /opt/healthcheck-readiness.sh
+          #            initialDelaySeconds: 5
+          #            periodSeconds: 2
+          #            timeoutSeconds: 1
+          #            successThreshold: 1
+          #            failureThreshold: 3
           volumeMounts:
             - name: mysql-persistent-storage
               mountPath: /var/lib/mysql
             - name: executable-scripts
               mountPath: /tmp/init-sql-db.sh
               subPath: init-sql-db.sh
+              readOnly: false
+            - name: executable-scripts
+              mountPath: /opt/healthcheck-liveness.sh
+              subPath: healthcheck-liveness.sh
+              readOnly: false
+            - name: executable-scripts
+              mountPath: /opt/healthcheck-readiness.sh
+              subPath: healthcheck-readiness.sh
               readOnly: false
             - name: mysql-scripts
               mountPath: /tmp/init.sql
@@ -78,6 +105,10 @@ spec:
             items:
               - key: init-sql-db.sh
                 path: init-sql-db.sh
+              - key: healthcheck-liveness.sh
+                path: healthcheck-liveness.sh
+              - key: healthcheck-readiness.sh
+                path: healthcheck-readiness.sh
             defaultMode: 0755
         - name: mysql-scripts
           configMap:

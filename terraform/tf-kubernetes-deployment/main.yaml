@@ -1,14 +1,14 @@
 "id": "webserver-assessment/dockerize"
 "metadata":
-- "annotations": null
+- "annotations": {}
   "generate_name": ""
   "generation": 1
   "labels":
     "app": "dockerize"
   "name": "dockerize"
   "namespace": "webserver-assessment"
-  "resource_version": "1926"
-  "uid": "754c1c29-5e52-4deb-8689-d02126b7623a"
+  "resource_version": "7981"
+  "uid": "e0664f09-5b17-4707-9422-7c09c240ce95"
 "spec":
 - "min_ready_seconds": 0
   "paused": false
@@ -26,7 +26,7 @@
     "type": "RollingUpdate"
   "template":
   - "metadata":
-    - "annotations": null
+    - "annotations": {}
       "generate_name": ""
       "generation": 0
       "labels":
@@ -40,15 +40,10 @@
       "affinity": []
       "automount_service_account_token": true
       "container":
-      - "args": null
+      - "args": []
         "command": []
         "env": []
         "env_from":
-        - "config_map_ref": []
-          "prefix": ""
-          "secret_ref":
-          - "name": "database-secrets"
-            "optional": false
         - "config_map_ref": []
           "prefix": ""
           "secret_ref":
@@ -123,7 +118,7 @@
           "sub_path": "server.config"
         - "mount_path": "/app/scripts/prestop.sh"
           "mount_propagation": "None"
-          "name": "dockerize-scripts"
+          "name": "executable-scripts"
           "read_only": true
           "sub_path": "prestop.sh"
         "working_dir": ""
@@ -137,7 +132,7 @@
       "hostname": ""
       "image_pull_secrets": []
       "init_container":
-      - "args": null
+      - "args": []
         "command":
         - "/bin/sh"
         - "-c"
@@ -174,17 +169,17 @@
           "sub_path": "server.config"
         - "mount_path": "/app/init.sh"
           "mount_propagation": "None"
-          "name": "dockerize-scripts"
+          "name": "executable-scripts"
           "read_only": true
           "sub_path": "init.sh"
         - "mount_path": "/app/init.sql"
           "mount_propagation": "None"
-          "name": "dockerize-sql"
+          "name": "mysql-scripts"
           "read_only": true
           "sub_path": "init.sql"
         "working_dir": ""
       "node_name": ""
-      "node_selector": null
+      "node_selector": {}
       "priority_class_name": ""
       "readiness_gate": []
       "restart_policy": "Always"
@@ -244,7 +239,7 @@
           - "key": "prestop.sh"
             "mode": ""
             "path": "prestop.sh"
-          "name": "dockerize-scripts"
+          "name": "executable-scripts"
           "optional": false
         "csi": []
         "downward_api": []
@@ -258,7 +253,7 @@
         "host_path": []
         "iscsi": []
         "local": []
-        "name": "dockerize-scripts"
+        "name": "executable-scripts"
         "nfs": []
         "persistent_volume_claim": []
         "photon_persistent_disk": []
@@ -278,7 +273,7 @@
           - "key": "init.sql"
             "mode": ""
             "path": "init.sql"
-          "name": "dockerize-sql"
+          "name": "mysql-scripts"
           "optional": false
         "csi": []
         "downward_api": []
@@ -292,7 +287,7 @@
         "host_path": []
         "iscsi": []
         "local": []
-        "name": "dockerize-sql"
+        "name": "mysql-scripts"
         "nfs": []
         "persistent_volume_claim": []
         "photon_persistent_disk": []

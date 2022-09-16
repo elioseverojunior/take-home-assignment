@@ -33,16 +33,17 @@ spec:
           envFrom:
             - secretRef:
                 name: database-secrets
+                optional: false
           volumeMounts:
             - name: database-secrets
               mountPath: /app/server.config
               subPath: server.config
               readOnly: true
-            - name: dockerize-scripts
+            - name: executable-scripts
               mountPath: /app/init.sh
               subPath: init.sh
               readOnly: true
-            - name: dockerize-sql
+            - name: mysql-scripts
               mountPath: /app/init.sql
               subPath: init.sql
               readOnly: true
@@ -51,8 +52,6 @@ spec:
           image: elioseverojunior/dockerize:latest
           imagePullPolicy: IfNotPresent
           envFrom:
-            - secretRef:
-                name: database-secrets
             - secretRef:
                 name: database-secrets
           ports:
@@ -91,7 +90,7 @@ spec:
               mountPath: /app/server.config
               subPath: server.config
               readOnly: true
-            - name: dockerize-scripts
+            - name: executable-scripts
               mountPath: /app/scripts/prestop.sh
               subPath: prestop.sh
               readOnly: true
@@ -102,18 +101,18 @@ spec:
             items:
               - key: server.config
                 path: server.config
-        - name: dockerize-scripts
+        - name: executable-scripts
           configMap:
-            name: dockerize-scripts
+            name: executable-scripts
             items:
               - key: init.sh
                 path: init.sh
               - key: prestop.sh
                 path: prestop.sh
             defaultMode: 0755
-        - name: dockerize-sql
+        - name: mysql-scripts
           configMap:
-            name: dockerize-sql
+            name: mysql-scripts
             items:
               - key: init.sql
                 path: init.sql

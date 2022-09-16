@@ -43,13 +43,6 @@ locals {
   ])
 }
 
-resource "kubernetes_namespace" "namespace" {
-  metadata {
-    labels = local.namespace.metadata.labels
-    name   = local.namespace.metadata.name
-  }
-}
-
 resource "local_sensitive_file" "secret_string_data" {
   for_each = local.secrets.stringData
   content  = each.value
@@ -57,7 +50,7 @@ resource "local_sensitive_file" "secret_string_data" {
 }
 
 resource "kubernetes_secret" "database_secrets" {
-  depends_on = [kubernetes_namespace.namespace, local_sensitive_file.secret_string_data]
+  depends_on = [local_sensitive_file.secret_string_data]
   metadata {
     name      = local.secrets.metadata.name
     namespace = local.secrets.metadata.namespace
@@ -81,7 +74,6 @@ resource "kubernetes_secret" "database_secrets" {
 }
 
 resource "kubernetes_config_map" "config_maps_scripts" {
-  depends_on = [kubernetes_namespace.namespace]
   metadata {
     name      = local.config_map_scripts.metadata.name
     namespace = local.config_map_scripts.metadata.namespace
@@ -97,7 +89,6 @@ resource "kubernetes_config_map" "config_maps_scripts" {
 }
 
 resource "kubernetes_config_map" "config_maps_sql" {
-  depends_on = [kubernetes_namespace.namespace]
   metadata {
     name      = local.config_map_sql.metadata.name
     namespace = local.config_map_sql.metadata.namespace
@@ -113,17 +104,12 @@ resource "kubernetes_config_map" "config_maps_sql" {
 }
 
 resource "kubernetes_deployment" "deployment" {
-  depends_on = [
-    kubernetes_namespace.namespace,
-    kubernetes_secret.database_secrets,
-    kubernetes_config_map.config_maps_scripts,
-    kubernetes_config_map.config_maps_sql
-  ]
+  depends_on = [kubernetes_config_map.config_maps_scripts]
 
   metadata {
     labels    = local.app.metadata.labels
     name      = local.app.metadata.name
-    namespace = kubernetes_namespace.namespace.metadata[0].name
+    namespace = local.app.metadata.namespace
   }
 
   spec {
@@ -357,22 +343,8 @@ resource "kubernetes_service" "service" {
   wait_for_load_balancer = false
 }
 
-resource "null_resource" "minikube_service_url_auto_start" {
-  depends_on = [kubernetes_service.service]
-  triggers = {
-    uuid = uuid()
-  }
-  provisioner "local-exec" {
-    command = "minikube service dockerize -n webserver-assessment"
-  }
-}
-
 resource "kubernetes_horizontal_pod_autoscaler_v2" "hpa" {
-  depends_on = [
-    kubernetes_namespace.namespace,
-    kubernetes_deployment.deployment,
-    kubernetes_service.service
-  ]
+  depends_on = [kubernetes_deployment.deployment]
   metadata {
     name      = local.hpa.metadata.name
     namespace = local.hpa.metadata.namespace

@@ -74,11 +74,11 @@ spec:
               mountPath: /app/server.config
               subPath: server.config
               readOnly: true
-            - name: dockerize-scripts
+            - name: executable-scripts
               mountPath: /app/init.sh
               subPath: init.sh
               readOnly: true
-            - name: dockerize-sql
+            - name: mysql-scripts
               mountPath: /app/init.sql
               subPath: init.sql
               readOnly: true
@@ -125,7 +125,7 @@ spec:
               mountPath: /app/server.config
               subPath: server.config
               readOnly: true
-            - name: dockerize-scripts
+            - name: executable-scripts
               mountPath: /app/scripts/prestop.sh
               subPath: prestop.sh
               readOnly: true
@@ -136,21 +136,14 @@ spec:
             items:
               - key: server.config
                 path: server.config
-        - name: dockerize-scripts
+        - name: executable-scripts
           configMap:
-            name: dockerize-scripts
+            name: executable-scripts
             items:
               - key: init.sh
                 path: init.sh
               - key: prestop.sh
                 path: prestop.sh
-            defaultMode: 0755
-        - name: dockerize-sql
-          configMap:
-            name: dockerize-sql
-            items:
-              - key: init.sql
-                path: init.sql
             defaultMode: 0755
       dnsPolicy: ClusterFirst
 ```

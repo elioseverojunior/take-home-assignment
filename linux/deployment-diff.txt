@@ -1,0 +1,20 @@
+diff -u -N /var/folders/z8/pclnqm3j1bq4mlc6lrlns53r0000gn/T/LIVE-2291850944/apps.v1.Deployment.webserver-assessment.dockerize /var/folders/z8/pclnqm3j1bq4mlc6lrlns53r0000gn/T/MERGED-44175767/apps.v1.Deployment.webserver-assessment.dockerize
+--- /var/folders/z8/pclnqm3j1bq4mlc6lrlns53r0000gn/T/LIVE-2291850944/apps.v1.Deployment.webserver-assessment.dockerize	2022-09-15 22:23:54.000000000 -0300
++++ /var/folders/z8/pclnqm3j1bq4mlc6lrlns53r0000gn/T/MERGED-44175767/apps.v1.Deployment.webserver-assessment.dockerize	2022-09-15 22:23:54.000000000 -0300
+@@ -4,7 +4,7 @@
+   annotations:
+     deployment.kubernetes.io/revision: "1"
+   creationTimestamp: "2022-09-15T23:25:15Z"
+-  generation: 1
++  generation: 2
+   labels:
+     app: dockerize
+   name: dockerize
+@@ -36,7 +36,6 @@
+       - envFrom:
+         - secretRef:
+             name: database-secrets
+-            optional: false
+         image: elioseverojunior/dockerize:latest
+         imagePullPolicy: IfNotPresent
+         lifecycle:
